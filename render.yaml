@@ -1,0 +1,20 @@
+# This Blueprint is a single always-on-or-sleeping web process.
+# Render Free spins down after 15 minutes without traffic. The room lives only
+# in RAM, so a sleep wipes the evening. Open /host a few minutes before people
+# arrive and keep the tab open. Do not scale this service: one instance only.
+
+services:
+  - type: web
+    name: gifs-mood
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: HOST_SECRET
+        sync: false
+      - key: GIPHY_API_KEY
+        sync: false

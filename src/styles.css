@@ -1,0 +1,390 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&family=Rubik+Mono+One&display=swap");
+
+:root {
+  --ink: #140b1f;
+  --ink-2: #221433;
+  --cream: #f6e7c1;
+  --cream-dim: #d9c89a;
+  --coral: #ff5a7a;
+  --lime: #c8ff4d;
+  --lilac: #c9b6ff;
+  --line: rgba(246, 231, 193, 0.16);
+  font-family: Manrope, "Segoe UI", sans-serif;
+  color: var(--cream);
+  background: var(--ink);
+  line-height: 1.35;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  background:
+    radial-gradient(1200px 500px at 10% -10%, #5b1d4a 0%, transparent 55%),
+    radial-gradient(900px 400px at 110% 0%, #2a4d1c 0%, transparent 50%),
+    var(--ink);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+h1,
+h2,
+.eyebrow,
+.code-huge,
+.code-pill,
+.counter,
+.you-badge {
+  font-family: "Rubik Mono One", Manrope, sans-serif;
+  letter-spacing: 0.02em;
+}
+
+h1 {
+  font-size: clamp(1.8rem, 6vw, 3.4rem);
+  line-height: 1.05;
+  margin: 0 0 0.4rem;
+}
+
+h2 {
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.page {
+  width: min(920px, 100%);
+  margin: 0 auto;
+  padding: 1.25rem 1.1rem 5rem;
+}
+
+.eyebrow {
+  color: var(--lime);
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  margin: 0 0 0.4rem;
+}
+
+.lede,
+.muted {
+  color: var(--cream-dim);
+}
+
+.error {
+  color: var(--coral);
+}
+
+.stack {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1.2rem;
+}
+
+input,
+.search {
+  width: 100%;
+  border: 2px solid var(--line);
+  background: var(--ink-2);
+  color: var(--cream);
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+}
+
+button {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.8rem 1.1rem;
+  background: #3a2a4f;
+  color: var(--cream);
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.primary {
+  background: var(--lime);
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.danger {
+  background: var(--coral);
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.ghost {
+  background: transparent;
+  border: 1px solid var(--line);
+}
+
+.text-btn {
+  background: transparent;
+  color: var(--lilac);
+  padding: 0;
+}
+
+.code-pill,
+.you-name {
+  display: inline-block;
+  background: var(--coral);
+  color: var(--ink);
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  font-family: "Rubik Mono One", sans-serif;
+}
+
+.host-gate,
+.empty,
+.join {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.host-layout {
+  width: min(1280px, 100%);
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 1.5rem;
+  min-height: 100dvh;
+  align-items: start;
+}
+
+.host-side {
+  position: sticky;
+  top: 1rem;
+  display: grid;
+  gap: 0.8rem;
+  background: rgba(20, 11, 31, 0.72);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: 1rem;
+}
+
+.host-controls {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.people {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.people li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 12px;
+  background: #1c1229;
+}
+
+.people li.ready small {
+  color: var(--lime);
+}
+
+.people small {
+  color: var(--cream-dim);
+}
+
+.host-stage,
+.empty-stage,
+.qr-card {
+  background: rgba(34, 20, 51, 0.55);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  padding: 1.2rem;
+}
+
+.qr-card {
+  text-align: center;
+}
+
+.qr-card img {
+  width: min(320px, 100%);
+  border-radius: 16px;
+}
+
+.code-huge {
+  font-size: clamp(2.4rem, 8vw, 4.5rem);
+  margin: 0.2rem 0 0.8rem;
+  color: var(--lime);
+}
+
+.join-url {
+  overflow-wrap: anywhere;
+  color: var(--lilac);
+  font-size: 0.9rem;
+}
+
+.slide {
+  display: grid;
+  gap: 1rem;
+}
+
+.slide-head h1 {
+  margin-bottom: 0;
+}
+
+.counter {
+  color: var(--lilac);
+  margin: 0;
+}
+
+.you-badge {
+  display: inline-block;
+  margin-top: 0.5rem;
+  background: var(--lime);
+  color: var(--ink);
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+}
+
+.slide figure,
+.wall-card figure {
+  margin: 0;
+}
+
+.slide img,
+.wall-card img,
+.selected-gif img,
+.gif-cell img {
+  width: 100%;
+  border-radius: 18px;
+  display: block;
+  background: #09060f;
+}
+
+figcaption {
+  color: var(--cream-dim);
+  margin-bottom: 0.35rem;
+  font-size: 0.85rem;
+}
+
+.picker {
+  margin: 1.2rem 0 1.6rem;
+  padding: 1rem;
+  border-radius: 24px;
+  background: rgba(20, 11, 31, 0.65);
+  border: 1px solid var(--line);
+}
+
+.picker-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.7rem;
+}
+
+.gif-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.45rem;
+  margin-top: 0.8rem;
+}
+
+.gif-cell {
+  padding: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+  aspect-ratio: 1;
+}
+
+.gif-cell.selected {
+  outline: 3px solid var(--lime);
+}
+
+.selected-gif {
+  margin-top: 0.7rem;
+  position: relative;
+}
+
+.selected-gif span {
+  position: absolute;
+  left: 0.6rem;
+  bottom: 0.6rem;
+  background: var(--lime);
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 0.15rem 0.55rem;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.giphy-mark {
+  display: flex;
+  gap: 0.4rem;
+  align-items: baseline;
+  margin-top: 0.85rem;
+  color: var(--cream);
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+.giphy-mark strong {
+  background: #000;
+  color: #fff;
+  padding: 0.1rem 0.4rem;
+  letter-spacing: 0.08em;
+}
+
+.sticky-submit {
+  position: sticky;
+  bottom: 0.8rem;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.wall {
+  display: grid;
+  gap: 1rem;
+}
+
+.wall-title {
+  margin-bottom: 1rem;
+}
+
+.wall-card {
+  padding: 0.9rem;
+  border-radius: 22px;
+  background: #1c1229;
+}
+
+.wall-gifs {
+  display: grid;
+  gap: 0.7rem;
+}
+
+@media (min-width: 720px) {
+  .wall-gifs {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 860px) {
+  .host-layout {
+    grid-template-columns: 1fr;
+  }
+  .host-side {
+    position: static;
+  }
+}
