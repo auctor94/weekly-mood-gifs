@@ -181,8 +181,15 @@ export default function JoinPage() {
         {phase === "presenting" ? (
           <p className="lede">Идёт показ. Отправь гифки — ты будешь в конце очереди.</p>
         ) : (
-          <p className="lede">Две гифки: как сейчас и как прошла неделя.</p>
+          <p className="lede">
+            Две гифки: как у тебя сейчас настроение и как прошла твоя неделя.
+          </p>
         )}
+        <ol className="howto">
+          <li>В каждом блоке есть поле поиска — нажми на него и напиши запрос, например «кофе» или «ура».</li>
+          <li>Появятся гифки. Нажми на ту, которая подходит.</li>
+          <li>Когда обе выбраны — «Готово» внизу.</li>
+        </ol>
       </header>
       <GifPicker label="Настроение сейчас" apiKey={apiKey} selected={moodNow} onSelect={setMoodNow} />
       <GifPicker label="Как прошла неделя" apiKey={apiKey} selected={weekWent} onSelect={setWeekWent} />

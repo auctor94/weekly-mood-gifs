@@ -78,6 +78,22 @@ h2 {
   color: var(--cream-dim);
 }
 
+.howto {
+  margin: 0.9rem 0 0;
+  padding: 0.85rem 0.85rem 0.85rem 1.7rem;
+  border-radius: 16px;
+  background: rgba(200, 255, 77, 0.1);
+  border: 1px solid rgba(200, 255, 77, 0.35);
+  color: var(--cream);
+  display: grid;
+  gap: 0.45rem;
+}
+
+.howto li::marker {
+  color: var(--lime);
+  font-weight: 800;
+}
+
 .error {
   color: var(--coral);
 }

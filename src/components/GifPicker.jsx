@@ -115,7 +115,7 @@ export default function GifPicker({ label, apiKey, selected, onSelect }) {
       <input
         className="search"
         type="search"
-        placeholder={apiKey ? "Найди гифку…" : "Ключа нет — выбери демо"}
+        placeholder={apiKey ? "Напиши сюда запрос, например: устал" : "Ключа нет — выбери демо"}
         value={query}
         onChange={(event) => setQuery(event.target.value)}
         autoCapitalize="none"
