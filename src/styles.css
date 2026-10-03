@@ -265,7 +265,6 @@ button:disabled {
 
 .slide img,
 .wall-card img,
-.selected-gif img,
 .gif-cell img {
   width: 100%;
   border-radius: 18px;
@@ -277,6 +276,15 @@ figcaption {
   color: var(--cream-dim);
   margin-bottom: 0.35rem;
   font-size: 0.85rem;
+}
+
+.slide figcaption,
+.wall-card figcaption {
+  font-family: "Rubik Mono One", Manrope, sans-serif;
+  color: var(--cream);
+  font-size: clamp(1.15rem, 4.6vw, 1.7rem);
+  line-height: 1.2;
+  margin-bottom: 0.55rem;
 }
 
 .picker {
@@ -311,23 +319,6 @@ figcaption {
 
 .gif-cell.selected {
   outline: 3px solid var(--lime);
-}
-
-.selected-gif {
-  margin-top: 0.7rem;
-  position: relative;
-}
-
-.selected-gif span {
-  position: absolute;
-  left: 0.6rem;
-  bottom: 0.6rem;
-  background: var(--lime);
-  color: var(--ink);
-  border-radius: 999px;
-  padding: 0.15rem 0.55rem;
-  font-size: 0.8rem;
-  font-weight: 800;
 }
 
 .giphy-mark {

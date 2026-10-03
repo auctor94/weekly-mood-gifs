@@ -121,16 +121,13 @@ export default function GifPicker({ label, apiKey, selected, onSelect }) {
         autoCapitalize="none"
         autoCorrect="off"
       />
-      {selected ? (
-        <div className="selected-gif">
-          <img src={selected.previewUrl} alt={selected.title || label} />
-          <span>Выбрано</span>
-        </div>
-      ) : null}
       {loading ? <p className="muted">Ищем…</p> : null}
       {error ? <p className="error">{error}</p> : null}
       <div className="gif-grid">
-        {results.map((gif) => (
+        {(selected && !results.some((gif) => gif.giphyId === selected.giphyId)
+          ? [selected, ...results]
+          : results
+        ).map((gif) => (
           <button
             key={gif.giphyId}
             type="button"

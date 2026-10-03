@@ -10,9 +10,60 @@ import { Server } from "socket.io";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT) || 3000;
 const HOST_SECRET = process.env.HOST_SECRET || "";
-const GIPHY_API_KEY = process.env.GIPHY_API_KEY || "";
+const GIPHY_KEYS = loadGiphyKeys();
 const isProd = process.env.NODE_ENV === "production";
 const CODE_ALPHABET = "ABCDEFGHJKMNPQRTUVWXYZ2346789";
+
+function loadGiphyKeys() {
+  const raw = [
+    process.env.GIPHY_API_KEY,
+    process.env.GIPHY_API_KEY_1,
+    process.env.GIPHY_API_KEY_2,
+    process.env.GIPHY_API_KEY_3,
+    ...(String(process.env.GIPHY_API_KEYS || "").split(/[,\s]+/)),
+  ];
+  const keys = [];
+  const seen = new Set();
+  for (const value of raw) {
+    const key = String(value || "").trim();
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    keys.push(key);
+  }
+  return keys;
+}
+
+function keyForIndex(index) {
+  if (typeof index !== "number" || index < 0 || !GIPHY_KEYS[index]) return "";
+  return GIPHY_KEYS[index];
+}
+
+function assignKeysEvenly(participants) {
+  if (GIPHY_KEYS.length === 0) {
+    for (const participant of participants) participant.giphyKeyIndex = null;
+    return;
+  }
+  const ids = shuffle(participants.map((p) => p.id));
+  ids.forEach((id, i) => {
+    const participant = participants.find((p) => p.id === id);
+    if (participant) participant.giphyKeyIndex = i % GIPHY_KEYS.length;
+  });
+}
+
+function leastUsedKeyIndex(participants) {
+  if (GIPHY_KEYS.length === 0) return null;
+  const counts = Array(GIPHY_KEYS.length).fill(0);
+  for (const participant of participants) {
+    if (typeof participant.giphyKeyIndex === "number") {
+      counts[participant.giphyKeyIndex] += 1;
+    }
+  }
+  let best = 0;
+  for (let i = 1; i < counts.length; i += 1) {
+    if (counts[i] < counts[best]) best = i;
+  }
+  return best;
+}
 
 /** @type {Room | null} */
 let room = null;
@@ -26,10 +77,12 @@ let room = null;
  *   moodNow: GifRef | null,
  *   weekWent: GifRef | null,
  *   submittedAt: string | null,
+ *   giphyKeyIndex: number | null,
  * }} Participant
  * @typedef {{
  *   code: string,
  *   phase: "lobby" | "presenting" | "wall",
+ *   pickingStarted: boolean,
  *   hostSocketId: string | null,
  *   participants: Participant[],
  *   order: string[],
@@ -123,12 +176,23 @@ function wallCards(currentRoom) {
 
 function hostView(currentRoom) {
   if (!currentRoom) {
-    return { role: "host", phase: "idle", code: null, participants: [], slide: null, wall: null };
+    return {
+      role: "host",
+      phase: "idle",
+      pickingStarted: false,
+      keyCount: GIPHY_KEYS.length,
+      code: null,
+      participants: [],
+      slide: null,
+      wall: null,
+    };
   }
   const hideGifs = currentRoom.phase === "lobby";
   return {
     role: "host",
     phase: currentRoom.phase,
+    pickingStarted: currentRoom.pickingStarted,
+    keyCount: GIPHY_KEYS.length,
     code: currentRoom.code,
     currentIndex: currentRoom.currentIndex,
     orderLength: currentRoom.order.length,
@@ -153,6 +217,7 @@ function participantView(currentRoom, participantId) {
     return {
       role: "participant",
       phase: "idle",
+      pickingStarted: false,
       code: null,
       me: null,
       slide: null,
@@ -165,6 +230,7 @@ function participantView(currentRoom, participantId) {
   return {
     role: "participant",
     phase: currentRoom.phase,
+    pickingStarted: currentRoom.pickingStarted,
     code: currentRoom.code,
     me: me
       ? {
@@ -173,6 +239,7 @@ function participantView(currentRoom, participantId) {
           submitted: isSubmitted(me),
           moodNow: me.moodNow,
           weekWent: me.weekWent,
+          giphyApiKey: currentRoom.pickingStarted ? keyForIndex(me.giphyKeyIndex) : "",
         }
       : null,
     slide: currentRoom.phase === "presenting" ? slide : null,
@@ -193,7 +260,7 @@ app.get("/health", (_req, res) => {
 app.get("/api/config", (_req, res) => {
   res.json({
     appName: "Неделя в гифках",
-    giphyApiKey: GIPHY_API_KEY,
+    keyCount: GIPHY_KEYS.length,
   });
 });
 
@@ -262,12 +329,36 @@ io.on("connection", (socket) => {
     room = {
       code: makeCode(),
       phase: "lobby",
+      pickingStarted: false,
       hostSocketId: socket.id,
       participants: [],
       order: [],
       currentIndex: 0,
     };
     ack?.({ ok: true, code: room.code });
+    emitAll();
+  });
+
+  socket.on("host:startPicking", (_payload, ack) => {
+    if (!requireHost(socket) || !room) {
+      ack?.({ ok: false, error: "Комната не найдена" });
+      return;
+    }
+    if (room.phase !== "lobby") {
+      ack?.({ ok: false, error: "Выбор уже позади" });
+      return;
+    }
+    if (room.pickingStarted) {
+      ack?.({ ok: false, error: "Выбор уже начат" });
+      return;
+    }
+    if (room.participants.length < 1) {
+      ack?.({ ok: false, error: "Подождите хотя бы одного человека" });
+      return;
+    }
+    assignKeysEvenly(room.participants);
+    room.pickingStarted = true;
+    ack?.({ ok: true });
     emitAll();
   });
 
@@ -354,6 +445,11 @@ io.on("connection", (socket) => {
       const already = room.participants.find((p) => p.id === socket.data.participantId);
       if (already) {
         already.socketId = socket.id;
+        if (room.pickingStarted && already.giphyKeyIndex == null) {
+          already.giphyKeyIndex = leastUsedKeyIndex(
+            room.participants.filter((p) => p.id !== already.id),
+          );
+        }
         ack?.({ ok: true, participantId: already.id, name: already.name });
         emitAll();
         return;
@@ -363,6 +459,11 @@ io.on("connection", (socket) => {
     const existing = incomingId ? room.participants.find((p) => p.id === incomingId) : null;
     if (existing) {
       existing.socketId = socket.id;
+      if (room.pickingStarted && existing.giphyKeyIndex == null) {
+        existing.giphyKeyIndex = leastUsedKeyIndex(
+          room.participants.filter((p) => p.id !== existing.id),
+        );
+      }
       if (payload?.name) {
         existing.name = uniqueName(String(payload.name), room.participants, existing.id);
       }
@@ -384,6 +485,7 @@ io.on("connection", (socket) => {
       moodNow: null,
       weekWent: null,
       submittedAt: null,
+      giphyKeyIndex: room.pickingStarted ? leastUsedKeyIndex(room.participants) : null,
     };
     room.participants.push(participant);
     socket.data.participantId = participant.id;
@@ -435,5 +537,5 @@ io.on("connection", (socket) => {
 });
 
 server.listen(PORT, "0.0.0.0", () => {
-  console.log(`Неделя в гифках слушает 0.0.0.0:${PORT}`);
+  console.log(`Неделя в гифках слушает 0.0.0.0:${PORT}, ключей GIPHY: ${GIPHY_KEYS.length}`);
 });

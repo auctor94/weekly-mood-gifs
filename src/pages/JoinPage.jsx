@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { loadConfig } from "../api.js";
 import GifPicker from "../components/GifPicker.jsx";
 import SlideView from "../components/SlideView.jsx";
 import WallView from "../components/WallView.jsx";
@@ -16,21 +15,16 @@ export default function JoinPage() {
   const [name, setName] = useState(() => sessionStorage.getItem(NAME_KEY) || "");
   const [moodNow, setMoodNow] = useState(null);
   const [weekWent, setWeekWent] = useState(null);
-  const [apiKey, setApiKey] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
   const phase = state?.phase || "idle";
+  const pickingStarted = Boolean(state?.pickingStarted);
   const roomCode = state?.code;
   const me = state?.me;
+  const apiKey = me?.giphyApiKey || "";
   const routeCode = codeFromRoute?.toUpperCase();
   const codeMismatch = Boolean(routeCode && roomCode && routeCode !== roomCode);
-
-  useEffect(() => {
-    loadConfig()
-      .then((config) => setApiKey(config.giphyApiKey || ""))
-      .catch(() => setApiKey(""));
-  }, []);
 
   useEffect(() => {
     if (me?.moodNow) setMoodNow(me.moodNow);
@@ -137,6 +131,16 @@ export default function JoinPage() {
           </button>
         </form>
         {error ? <p className="error">{error}</p> : null}
+      </main>
+    );
+  }
+
+  if (me && !pickingStarted && !me.submitted && phase === "lobby") {
+    return (
+      <main className="page empty">
+        <p className="eyebrow">Неделя в гифках</p>
+        <h1>Ты в комнате, {me.name}</h1>
+        <p className="lede">Подожди ведущего. Когда все соберутся, начнём выбирать гифки.</p>
       </main>
     );
   }

@@ -16,5 +16,9 @@ services:
         value: "20"
       - key: HOST_SECRET
         sync: false
-      - key: GIPHY_API_KEY
+      - key: GIPHY_API_KEY_1
+        sync: false
+      - key: GIPHY_API_KEY_2
+        sync: false
+      - key: GIPHY_API_KEY_3
         sync: false

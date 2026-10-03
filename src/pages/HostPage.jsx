@@ -114,7 +114,22 @@ export default function HostPage() {
             Начать вечер
           </button>
         ) : null}
-        {phase === "lobby" ? (
+        {phase === "lobby" && !state?.pickingStarted ? (
+          <>
+            <p className="stat">В комнате {totalCount}</p>
+            <p className="muted">
+              Ключей GIPHY: {state.keyCount ?? 0}. Сначала соберите людей, потом раздадим ключи.
+            </p>
+            <button
+              className="primary"
+              disabled={busy || totalCount < 1}
+              onClick={() => run("host:startPicking")}
+            >
+              Начать выбор
+            </button>
+          </>
+        ) : null}
+        {phase === "lobby" && state?.pickingStarted ? (
           <>
             <p className="stat">
               Готовы {readyCount} из {totalCount}
@@ -157,7 +172,9 @@ export default function HostPage() {
           {people.map((person) => (
             <li key={person.id} className={person.submitted ? "ready" : ""}>
               <span>{person.name}</span>
-              <small>{person.submitted ? "готово" : "выбирает"}</small>
+              <small>
+                {person.submitted ? "готово" : state?.pickingStarted ? "выбирает" : "ждёт"}
+              </small>
             </li>
           ))}
         </ul>
